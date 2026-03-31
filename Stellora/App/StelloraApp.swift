@@ -11,7 +11,7 @@ import SwiftUI
 struct StelloraApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            AppRouter()
         }
     }
 }
