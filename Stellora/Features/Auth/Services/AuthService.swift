@@ -47,10 +47,6 @@ final class AuthService {
         urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         // add body to http request
         urlRequest.httpBody = try JSONEncoder().encode(request)
-        print("============================ API BODY =============================================")
-        print(String(data: urlRequest.httpBody ?? Data(), encoding: .utf8) ?? "no body")
-        print("============================ API BODY =============================================")
-        
         let (data, response) = try await URLSession.shared.data(for: urlRequest)
         
         guard let httpResponse = response as? HTTPURLResponse else {
@@ -61,12 +57,6 @@ final class AuthService {
             return try JSONDecoder().decode(SignupResponse.self, from: data)
         }
         else {
-            print("============================ API ERROR =============================================")
-            print("api error received")
-            print("api error")
-            print(data)
-            print(String(data: data, encoding: .utf8) ?? "unable to decode response body")
-            print("============================ API ERROR =============================================")
             
             if let apiError = try? JSONDecoder().decode(SignupResponseError.self, from: data){
                 throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [
