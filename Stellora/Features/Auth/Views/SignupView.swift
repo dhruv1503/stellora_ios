@@ -113,71 +113,114 @@ struct SignupView: View {
         //        .padding()
         //    }
         
-        VStack {
-            Text("Create an account")
-                .font(.largeTitle)
-            Spacer()
-            VStack(alignment: .leading, spacing: 16) {
-                
-                AppTextField(
-                    title: "Full Name",
-                    placeholder: "Enter Full Name",
-                    text: $viewModel.name,
-                    errorMessage: viewModel.errorMessages.name
-                )
-                AppTextField(
-                    title: "Email Address",
-                    placeholder: "Enter Email Address",
-                    text: $viewModel.email,
-                    errorMessage: viewModel.errorMessages.email
-                )
-                
-                AppSecureField(
-                    title: "Password",
-                    placeholder: "Enter Password",
-                    text: $viewModel.password,
-                    errorMessage: viewModel.errorMessages.password
-                )
-                
-                AppSecureField(
-                    title: "Confirm Password",
-                    placeholder: "Re-enter Password",
-                    text: $viewModel.confirmPassword,
-                    errorMessage: viewModel.errorMessages.confirmPassword
-                )
-                
-                
-                
+        NavigationStack{
+            VStack {
+                Text("Create an account")
+                    .font(.largeTitle)
+                Spacer()
+                VStack(alignment: .leading, spacing: 16) {
                     
-                    
-            }.padding()
-            
-            Spacer()
-            
-            VStack{
-                Button{
-                    viewModel.validateForm()
-                }
-              
-                label: {
-                    HStack{
-                        if viewModel.isValidating {
-                                   ProgressView()
-                                       .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                               }
-                        Text("Register")
+                    AppTextField(
+                        title: "Full Name",
+                        placeholder: "Enter Full Name",
+                        text: $viewModel.name,
+                        errorMessage: viewModel.errorMessages.name
+                    )
+                    .onChange(of: viewModel.name){
+                        _, _ in
+                        viewModel.errorMessages.name = nil
+                        viewModel.serverErrorMessage = nil
                     }
+                    AppTextField(
+                        title: "Email Address",
+                        placeholder: "Enter Email Address",
+                        text: $viewModel.email,
+                        errorMessage: viewModel.errorMessages.email,
+                        capitalization: .never,
+                        autoCorrectionEnabled: false
+                    )
+                    .onChange(of: viewModel.email){
+                        _, _ in
+                        viewModel.errorMessages.email = nil
+                        viewModel.serverErrorMessage = nil
+                    }
+                    
+                    AppSecureField(
+                        title: "Password",
+                        placeholder: "Enter Password",
+                        text: $viewModel.password,
+                        errorMessage: viewModel.errorMessages.password
+                    )
+                    .onChange(of: viewModel.password){
+                        _, _ in
+                        viewModel.errorMessages.password = nil
+                        viewModel.serverErrorMessage = nil
+                    }
+                    
+                    AppSecureField(
+                        title: "Confirm Password",
+                        placeholder: "Re-enter Password",
+                        text: $viewModel.confirmPassword,
+                        errorMessage: viewModel.errorMessages.confirmPassword
+                    )
+                    .onChange(of: viewModel.confirmPassword){
+                        _, _ in
+                        viewModel.errorMessages.confirmPassword = nil
+                        viewModel.serverErrorMessage = nil
+                    }
+                    
+                    
+                    
+                    
+                }.padding()
+                
+                Spacer()
+                
+                if let serverErrorMessage = viewModel.serverErrorMessage,
+                   !serverErrorMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    FormErrorBanner(message: serverErrorMessage)
+                        
                 }
                 
-            }.frame(maxWidth: .infinity)
-                .padding()
-                .background(viewModel.isValidating ? Color.gray.opacity(0.3) : Color.blue)
-                .foregroundColor(.white)
-                .cornerRadius(12)
-                .padding(.horizontal)
-                .disabled(viewModel.isValidating)
+                VStack{
+                    Button{
+                        viewModel.validateForm()
+                    }
+                    
+                    label: {
+                        HStack{
+                            if viewModel.isValidating || viewModel.isLoading {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            }
+                            Text("Register")
+                        }
+                    }
+                    
+                }.frame(maxWidth: .infinity)
+                    .padding()
+                    .background(viewModel.isValidating || viewModel.isLoading ? Color.gray.opacity(0.3) : Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    .disabled(viewModel.isValidating || viewModel.isLoading || viewModel.serverErrorMessage != nil)
                 
+                
+            }
+//            .navigationDestination(
+//                isPresented: $viewModel.isValidated){
+//                    DashboardView()
+//                }
+            .navigationDestination(item: $viewModel.route){
+                route in
+                switch(route){
+                    case .dashboard:
+                    DashboardView()
+                }
+            }
         }
+        
+            
         
     }
 }

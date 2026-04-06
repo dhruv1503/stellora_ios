@@ -8,5 +8,5 @@
 import Foundation
 
 enum AppConfig{
-    static let baseURL : String = "http://192.168.1.2:8080/"
+    static let baseURL : String = "http://localhost:8080/"
 }

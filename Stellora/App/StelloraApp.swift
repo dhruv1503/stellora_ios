@@ -12,6 +12,9 @@ struct StelloraApp: App {
     var body: some Scene {
         WindowGroup {
             AppRouter()
+       
+            
+            
         }
     }
 }

@@ -75,8 +75,16 @@ struct SignUpErrors {
     var confirmPassword: String? = nil
 }
 
+enum Route {
+    case dashboard
+}
+
 @MainActor // run on UI thread
 final class AuthViewModel: ObservableObject {
+    func printHello() {
+        print("Hello from AuthViewModel")
+    }
+    
     @Published var name: String = ""
     @Published var email: String = ""
     @Published var password: String = ""
@@ -85,14 +93,18 @@ final class AuthViewModel: ObservableObject {
     @Published var errorMessages: SignUpErrors = SignUpErrors()
     @Published var isValidating: Bool = false
     @Published var isValidated: Bool = false
+    @Published var route: Route? = nil
+    @Published var serverErrorMessage : String? = nil
+    @Published var isLoading: Bool = false
     
     func validateForm() {
-        self.isValidating = true // this is not happening on background as it is wrapped outside Task
+        isValidating = true // this is not happening on background as it is wrapped outside Task
+        isValidated = false
         
         // runs on background thread, hence changes might not be updated on main thread, hence MainActor.run is required,
         // does it mean all the await tasking is happening on some other thread and when MainActor is called, main thread is notified to update changes?
         Task {
-            try? await Task.sleep(nanoseconds: 2_000_000_000)
+           
             
             var errors = SignUpErrors()
             
@@ -137,12 +149,31 @@ final class AuthViewModel: ObservableObject {
 //                   
 //                }
 //            }
-            self.errorMessages = errors
+            
+                           self.errorMessages = errors
                            self.isValidating = false
            
                            if !hasErrors {
                                self.isValidated = true
-                               print("SUCCESS → proceed to next screen")
+                               self.isLoading = true
+                               Task {
+                                   serverErrorMessage = nil
+                                   do {
+                                      let response =  try await AuthService().signup(
+                                        name: name.trimmingCharacters(in: .whitespacesAndNewlines),
+                                        email: email.trimmingCharacters(in: .whitespacesAndNewlines),
+                                        password: password
+                                       )
+                                       
+                                       print("Sign up suceess:", response.email)
+                                   }
+                                   catch{
+                                       self.serverErrorMessage = error.localizedDescription
+                                   }
+                                   self.isLoading = false
+                               }
+//                               self.route = .dashboard
+//                               print("SUCCESS → proceed to next screen")
            
                            }
         }

@@ -14,10 +14,10 @@ struct PrimaryButton: View {
     }
 }
 
-
 func action() {
-    print("button tapped")
-}
+     print("button tapped")
+ }
+
 
 #Preview {
     PrimaryButton(action: action)

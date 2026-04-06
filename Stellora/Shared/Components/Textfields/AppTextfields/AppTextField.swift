@@ -12,6 +12,9 @@ struct AppTextField: View {
     var placeholder: String = ""
     @Binding var text: String
     var errorMessage: String?
+    var capitalization: TextInputAutocapitalization?
+    var autoCorrectionEnabled: Bool = true
+    
     var validError : Bool {
         guard let error = errorMessage else { return false }
         let trimmed = error.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -33,6 +36,8 @@ struct AppTextField: View {
                         .stroke(validError ? .red : Color.gray.opacity(0.2), lineWidth: 1)
                 )
                 .cornerRadius(10)
+                .textInputAutocapitalization(capitalization ?? .sentences)
+                .autocorrectionDisabled(autoCorrectionEnabled)
             if let errorMessage, validError {
                 Text(errorMessage.capitalized)
                     .font(.caption)
@@ -65,7 +70,7 @@ struct AppTextField: View {
             title: "Title",
             placeholder: "Placeholder",
             text: $text,
-            errorMessage: nil
+            errorMessage: nil,
         )
     }
     
