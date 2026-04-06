@@ -44,15 +44,15 @@ struct AppTextField: View {
                     .foregroundColor(.red)
             }
             
-                
+            
         }
-       
+        
     }
 }
 
 #Preview {
     @Previewable @State var text: String = "value"
-     
+    
     VStack {
         AppTextField(
             title: "Title",

@@ -10,18 +10,18 @@ import SwiftUI
 
 struct FormErrorBanner: View {
     let message: String
-
+    
     var body: some View {
         HStack(alignment: .top, spacing: 10) {
             Image(systemName: "exclamationmark.circle.fill")
                 .foregroundColor(.red)
                 .padding(.top, 1)
-
+            
             Text(message)
                 .font(.footnote)
                 .foregroundColor(.primary)
                 .multilineTextAlignment(.leading)
-
+            
             Spacer(minLength: 0)
         }
         .padding(12)

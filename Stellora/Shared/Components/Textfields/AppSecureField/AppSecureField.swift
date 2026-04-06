@@ -10,17 +10,17 @@ import SwiftUI
 struct AppSecureField: View {
     var title: String = ""
     var placeholder: String = "Enter your password"
-
+    
     @Binding var text: String
     var errorMessage: String?
-
+    
     @State private var showPassword: Bool = false
-
+    
     var validError: Bool {
         guard let error = errorMessage else { return false }
         return !error.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
     }
-
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             if !title.isEmpty {
@@ -28,7 +28,7 @@ struct AppSecureField: View {
                     .font(.subheadline)
                     .foregroundStyle(validError ? .red : .primary)
             }
-
+            
             HStack(spacing: 8) {
                 Group {
                     if showPassword {
@@ -37,7 +37,7 @@ struct AppSecureField: View {
                         SecureField(placeholder, text: $text)
                     }
                 }
-
+                
                 Button {
                     showPassword.toggle()
                 } label: {
@@ -52,7 +52,7 @@ struct AppSecureField: View {
                     .stroke(validError ? .red : .gray.opacity(0.2), lineWidth: 1)
             )
             .cornerRadius(10)
-
+            
             if let errorMessage, validError {
                 Text(errorMessage)
                     .font(.caption)
@@ -63,8 +63,8 @@ struct AppSecureField: View {
 }
 
 #Preview {
-   @Previewable @State var text: String = "Password123"
-
+    @Previewable @State var text: String = "Password123"
+    
     return AppSecureField(
         title: "Password",
         placeholder: "Enter password",

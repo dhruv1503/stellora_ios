@@ -178,6 +178,8 @@ final class AuthViewModel: ObservableObject {
                            }
         }
     }
+    
+    func login() {}
 }
 
 
