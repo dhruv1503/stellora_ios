@@ -73,4 +73,49 @@ final class AuthService {
         
     }
     
+    func login(email: String, password: String) async throws -> LoginResponse {
+        // create a url
+        let body = LoginRequest(email: email, password: password)
+        
+        guard let urlObject = URL(string: AppConfig.baseURL + "api/v1/users/login") else {
+            throw URLError(.badURL)
+        }
+        
+        // url wrapper
+        var urlRequest = URLRequest(url: urlObject)
+        // bind method
+        urlRequest.httpMethod = "POST"
+        // bind headers
+        urlRequest.setValue("application/json", forHTTPHeaderField : "Content-Type")
+        // bind body
+        urlRequest.httpBody = try JSONEncoder().encode(body)
+        
+        // api call
+        let (data, response) = try await URLSession.shared.data(for: urlRequest)
+        
+        guard let httpResponse = response as? HTTPURLResponse else{
+            throw URLError(.badServerResponse)
+        }
+        
+        if(200...299).contains(httpResponse.statusCode){
+           return try JSONDecoder().decode(LoginResponse.self, from: data)
+        }
+        // error if there is errorMessage
+        else {
+            print("=========  ERROR  =========")
+            print(try? JSONDecoder().decode(SignupResponseError.self, from: data))
+            print("=========  ERROR  =========")
+            if let apiError = try? JSONDecoder().decode(SignupResponseError.self, from: data){
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [
+                    NSLocalizedDescriptionKey: apiError.message
+                ])
+            }
+            else {
+                throw NSError(domain: "", code: httpResponse.statusCode, userInfo: [
+                    NSLocalizedDescriptionKey: "Something went wrong"
+                ])
+            }
+        }
+    }
+    
 }

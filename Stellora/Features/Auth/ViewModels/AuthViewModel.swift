@@ -172,14 +172,32 @@ final class AuthViewModel: ObservableObject {
                                    }
                                    self.isLoading = false
                                }
-//                               self.route = .dashboard
+                               self.route = .dashboard
 //                               print("SUCCESS → proceed to next screen")
            
                            }
         }
     }
     
-    func login() {}
+    func login(email: String, password: String) {
+        self.isLoading = true
+        Task {
+            do{
+                let response = try await AuthService().login(
+                    email: email,
+                    password: password
+                )
+                print(response)
+            }
+            catch{
+                self.serverErrorMessage = error.localizedDescription
+            }
+            self.isLoading = false
+        }
+        self.route = .dashboard
+        
+        
+    }
 }
 
 
